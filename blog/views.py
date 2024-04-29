@@ -42,7 +42,7 @@ def serialize_post(post):
 def serialize_tag(tag):
     return {
         'title': tag.title,
-        'posts_with_tag': len(Post.objects.filter(tags=tag)),
+        'posts_with_tag': Post.objects.filter(tags=tag).count(),
     }
 
 
@@ -68,8 +68,10 @@ def index(request):
 
 
 def post_detail(request, slug):
-    post = Post.objects.annotate(likes_count=Count('likes')).get(slug=slug)
-    comments = Post.objects.annotate(comments_count=Count('comments'))
+    post = Post.objects.annotate(
+        likes_count=Count('likes')).prefetch_related('tags', 'author').get(slug=slug)
+
+    comments = Post.objects.annotate(comments_count=Count('comments')).prefetch_related('tags','author')
     serialized_comments = []
     for comment in comments:
         serialized_comments.append({

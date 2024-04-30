@@ -126,12 +126,14 @@ def tag_filter(request, tag_title):
         Prefetch('author'),
         Prefetch('tags',
                  queryset=Tag.objects.order_by('title'))).annotate(
-        posts_with_tag_count=Count('posts')).fetch_with_comments_count()[:5]
+        posts_with_tag_count=Count('tags')).fetch_with_comments_count()[:5]
 
     related_posts = Post.objects.filter(tags=tag).annotate(
-        comments_count=Count('comments'),
-        posts_with_tag_count=Count('posts')
-    ).all()[:20]
+        comments_count=Count('comments')).prefetch_related(
+        Prefetch('author'),
+        Prefetch('tags',
+                 queryset=Tag.objects.order_by('title'))).annotate(
+        posts_with_tag_count=Count('tags')).all()[:20]
 
     context = {
         'tag': tag.title,

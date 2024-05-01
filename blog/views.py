@@ -146,12 +146,6 @@ def tag_filter(request, tag_title):
     return render(request, 'posts-list.html', context)
 
 
-
-
-
-
-
-
 def contacts(request):
     # позже здесь будет код для статистики заходов на эту страницу
     # и для записи фидбека
